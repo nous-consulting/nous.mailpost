@@ -14,6 +14,8 @@ setup(
                  "License :: OSI Approved :: GNU General Public License (GPL)",
                  "Programming Language :: Python"],
     install_requires=[
+        'mox',
+        'zope.testing'
     ],
     package_dir={'': 'src'},
     packages=find_packages('src'),
