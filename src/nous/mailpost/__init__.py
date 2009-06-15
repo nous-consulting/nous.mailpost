@@ -71,30 +71,14 @@ def installBrokenRedirectHandler():
 
 
 def postEmail(callURL, mailString, authorization, attachments):
-    try:
-        req = urllib2.Request(callURL)
-        if authorization:
-            auth = base64.encodestring(authorization).strip()
-            req.add_header('Authorization', 'Basic %s' % auth)
-        data = 'Mail='+urllib.quote(mailString)
-        for attachment in attachments:
-            data += '&attachments[]=' + getAttachmentFilename(attachment)
-        urllib2.urlopen(req, data=data)
-    except Exception, e:
-        # If MailBoxer doesn't exist, bounce message with EXIT_NOUSER,
-        # so the sender will receive a "user-doesn't-exist"-mail from MTA.
-        if hasattr(e, 'code'):
-            if e.code == 404:
-                log_error("URL at %s doesn't exist (%s)" % (callURL, e))
-                sys.exit(EXIT_NOUSER)
-            else:
-                # Server down? EXIT_TEMPFAIL causes the MTA to try again later.
-                log_error('A problem, "%s", occurred uploading email to URL %s (error code was %s)' % (e, callURL, e.code))
-                sys.exit(EXIT_TEMPFAIL)
-        else:
-            # Server down? EXIT_TEMPFAIL causes the MTA to try again later.
-            log_error('A problem, "%s", occurred uploading email to server %s' % (e, callURL))
-            sys.exit(EXIT_TEMPFAIL)
+    req = urllib2.Request(callURL)
+    if authorization:
+        auth = base64.encodestring(authorization).strip()
+        req.add_header('Authorization', 'Basic %s' % auth)
+    data = 'Mail='+urllib.quote(mailString)
+    for attachment in attachments:
+        data += '&attachments[]=' + getAttachmentFilename(attachment)
+    urllib2.urlopen(req, data=data)
 
 
 def getAuthorization(url):
@@ -215,4 +199,20 @@ def main():
 
     mailString = sys.stdin.read()
     installBrokenRedirectHandler()
-    processEmailAndPost(callURL, mailString, upload_dir)
+    try:
+        processEmailAndPost(callURL, mailString, upload_dir)
+    except Exception, e:
+        # If MailBoxer doesn't exist, bounce message with EXIT_NOUSER,
+        # so the sender will receive a "user-doesn't-exist"-mail from MTA.
+        if hasattr(e, 'code'):
+            if e.code == 404:
+                log_error("URL at %s doesn't exist (%s)" % (callURL, e))
+                sys.exit(EXIT_NOUSER)
+            else:
+                # Server down? EXIT_TEMPFAIL causes the MTA to try again later.
+                log_error('A problem, "%s", occurred uploading email to URL %s (error code was %s)' % (e, callURL, e.code))
+                sys.exit(EXIT_TEMPFAIL)
+        else:
+            # Server down? EXIT_TEMPFAIL causes the MTA to try again later.
+            log_error('A problem, "%s", occurred uploading email to server %s' % (e, callURL))
+            sys.exit(EXIT_TEMPFAIL)
