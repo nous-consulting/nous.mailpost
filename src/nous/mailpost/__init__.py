@@ -152,6 +152,7 @@ def storeAttacment(attachment, upload_dir):
     size = copy_chunked(StringIO(attachment['filebody']), f, 4096)
     f.close()
 
+
 def processAttachments(mailString, upload_dir):
     # check to see if we have attachments
     text_body, content_type, html_body, attachments = unpackMail(mailString)
