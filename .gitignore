@@ -2,3 +2,7 @@
 *~
 src/nous.mailpost.egg-info/*
 dist/*
+.installed.cfg
+bin/*
+develop-eggs/*
+python/*
