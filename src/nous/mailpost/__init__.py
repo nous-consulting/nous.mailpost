@@ -170,6 +170,22 @@ def processAttachments(mailString, upload_dir):
     return mailString, attachments
 
 
+def processEmailAndPost(callURL, mailString, upload_dir):
+    # XXX refactor and test
+    urlParts = urllib2.urlparse.urlparse(callURL)
+    urlPath = '/'.join(filter(None, list(urlParts)[2].split('/'))[:-1])
+    baseURL = urllib2.urlparse.urlunparse(urlParts[:2]+(urlPath,)+urlParts[3:])+'/'
+
+    authorization = getAuthorization(callURL)
+    callURL = stripAuthentication(callURL)
+
+    # Get the raw mail
+    mailString, attachments = processAttachments(mailString, upload_dir)
+
+    installBrokenRedirectHandler()
+    postEmail(callURL, mailString, authorization, attachments)
+
+
 def main():
     args = list(sys.argv)
     args = args[:-2]
@@ -192,22 +208,11 @@ def main():
 
     # Get the path for uploaded files
     upload_dir = args[2]
-    os.makedirs(upload_dir)
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
     if not os.path.isdir(upload_dir):
         log_critical('File upload directory (%s) is invalid' % upload_dir)
         sys.exit(EXIT_USAGE)
 
-    # XXX refactor and test
-    urlParts = urllib2.urlparse.urlparse(callURL)
-    urlPath = '/'.join(filter(None, list(urlParts)[2].split('/'))[:-1])
-    baseURL = urllib2.urlparse.urlunparse(urlParts[:2]+(urlPath,)+urlParts[3:])+'/'
-
-    authorization = getAuthorization(callURL)
-    callURL = stripAuthentication(callURL)
-
-    # Get the raw mail
     mailString = sys.stdin.read()
-    mailString, attachments = processAttachments(mailString, upload_dir)
-
-    installBrokenRedirectHandler()
-    postEmail(callURL, mailString, authorization, attachments)
+    processEmailAndPost(callURL, mailString, upload_dir)
