@@ -19,6 +19,7 @@ setup(
     packages=find_packages('src'),
     include_package_data=True,
     zip_safe=True,
+    license="GPL",
     entry_points="""
     [console_scripts]
     mailpost = nous.mailpost:main
