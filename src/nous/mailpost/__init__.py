@@ -182,7 +182,6 @@ def processEmailAndPost(callURL, mailString, upload_dir):
     # Get the raw mail
     mailString, attachments = processAttachments(mailString, upload_dir)
 
-    installBrokenRedirectHandler()
     postEmail(callURL, mailString, authorization, attachments)
 
 
@@ -215,4 +214,5 @@ def main():
         sys.exit(EXIT_USAGE)
 
     mailString = sys.stdin.read()
+    installBrokenRedirectHandler()
     processEmailAndPost(callURL, mailString, upload_dir)
