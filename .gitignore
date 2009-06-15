@@ -1,0 +1,4 @@
+*.pyc
+*~
+src/nous.mailpost.egg-info/*
+dist/*
