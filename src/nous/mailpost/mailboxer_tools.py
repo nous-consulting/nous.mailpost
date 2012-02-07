@@ -15,7 +15,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA 02111-1307 USA.
 
-import StringIO, multifile, mimetools, re
+import StringIO, mimetools, re, warnings
+
+warnings.simplefilter('ignore', DeprecationWarning)
+import multifile
+warnings.simplefilter('default', DeprecationWarning)
+
 from nous.mailpost.MailBoxerTools import mime_decode_header
 
 # these functions are from Products/MailBoxer/MailBoxer_tools.py with a

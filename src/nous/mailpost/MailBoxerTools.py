@@ -17,7 +17,11 @@
 ###  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #####
 
-import StringIO, re, rfc822, multifile, mimetools, mimify
+import StringIO, re, rfc822, mimetools, warnings
+
+warnings.simplefilter('ignore', DeprecationWarning)
+import multifile, mimify
+warnings.simplefilter('default', DeprecationWarning)
 
 def splitMail(mailString):
     """ returns (header,body) of a mail given as string
