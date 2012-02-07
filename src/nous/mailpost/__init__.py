@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-
+import email
 import os
 import sys
 import urllib
@@ -77,7 +77,9 @@ def postEmail(callURL, mailString, authorization, attachments):
         req.add_header('Authorization', 'Basic %s' % auth)
     data = 'Mail='+urllib.quote(mailString)
     for attachment in attachments:
-        data += '&attachments[]=' + getAttachmentFilename(attachment)
+        data += '&md5[]=' + getAttachmentFilename(attachment)
+        data += '&mime-type[]=%s/%s' % (attachment['maintype'], attachment['subtype'])
+        data += '&filename[]=' + attachment['filename']
     urllib2.urlopen(req, data=data)
 
 
@@ -143,9 +145,9 @@ def processAttachments(mailString, upload_dir):
 
     num_attachments = len(attachments)
     if num_attachments or html_body:
-        content_type, text_body = getPlainBodyFromMail(mailString)
-        headers = headersAsString(mailString, {'Content-Type': content_type})
-        mailString = '%s\r\n\r\n%s' % (headers, text_body)
+        mail = email.message_from_string(mailString)
+        mail.set_payload(mail.get_payload()[0])
+        mailString = mail.as_string()
 
     # store attachment on the filesystem
     for attachment in attachments:

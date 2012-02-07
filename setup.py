@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='nous.mailpost',
-    version='0.3',
+    version='0.5.1',
     description='Email processor that posts the email received to a url',
     author='Ignas Mikalajunas',
     author_email='ignas@nous.lt',
